@@ -397,7 +397,6 @@ function ApplyPressureToTrigger() : boolean {
 			var round = cylinders[which_chamber].object;
 			if(round && cylinders[which_chamber].can_fire){
 				PlaySoundFromGroup(sound_gunshot_smallroom, 1.0);
-				active_round_state = RoundState.FIRED;
 				cylinders[which_chamber].can_fire = false;
 				cylinders[which_chamber].seated += Random.Range(0.0,0.5);
 				cylinders[which_chamber].object = Instantiate(shell_casing, round.transform.position, round.transform.rotation);
@@ -872,7 +871,6 @@ function Update () {
 				}
 				if(slide_amount >= 1.0){
 					PullSlideBack();
-					slide_amount = 1.0;
 					slide_stage = SlideStage.HOLD;
 					PlaySoundFromGroup(sound_slide_back, kGunMechanicVolume);
 				}
