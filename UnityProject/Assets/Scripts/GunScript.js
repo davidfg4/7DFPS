@@ -205,7 +205,8 @@ function Start () {
 			}
 		}
 		
-		if(Random.Range(0,2) == 0){
+		if(Random.Range(0,2) == 0 && magazine_instance_in_gun.GetComponent(mag_script).NumRounds()>0){
+			active_round_state = RoundState.LOADING;
 			slide_amount = kSlideLockPosition;
 			slide_lock = true;
 		}
@@ -276,7 +277,6 @@ function ChamberRoundFromMag() : boolean {
 	}
 	if(magazine_instance_in_gun && MagScript().NumRounds() > 0 && mag_stage == MagStage.IN){
 		if(!active_round){
-			MagScript().RemoveRound();
 			active_round = Instantiate(casing_with_bullet, transform.FindChild("point_load_round").position, transform.FindChild("point_load_round").rotation);
 			var renderers = active_round.GetComponentsInChildren(Renderer);
 			for(var renderer : Renderer in renderers){
@@ -438,6 +438,10 @@ function MagEject() : boolean {
 		return false;
 	}
 	PlaySoundFromGroup(sound_mag_eject_button, kGunMechanicVolume);
+	if(active_round_state == RoundState.LOADING){
+		GameObject.Destroy(active_round);
+		active_round_state = RoundState.EMPTY;
+	}
 	if(mag_stage != MagStage.OUT){
 		mag_stage = MagStage.REMOVING;
 		PlaySoundFromGroup(sound_mag_ejection, kGunMechanicVolume);
@@ -928,6 +932,7 @@ function Update () {
 				}
 			}
 			if(slide_amount == 0.0 && active_round_state == RoundState.LOADING){
+				MagScript().RemoveRound();
 				active_round_state = RoundState.READY;
 			}
 			if(slide_lock && old_slide_amount >= kSlideLockPosition){
